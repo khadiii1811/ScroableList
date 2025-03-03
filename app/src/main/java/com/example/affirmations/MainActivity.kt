@@ -48,6 +48,17 @@ import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.calculateEndPadding
+import androidx.compose.foundation.layout.Row
+import androidx.compose.material3.Button
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.Alignment
+
 
 class MainActivity : ComponentActivity() {
 
@@ -88,21 +99,61 @@ fun AffirmationsApp() {
 }
 @Composable
 fun AffirmationCard(affirmation: Affirmation, modifier: Modifier = Modifier) {
+    var clicked by remember { mutableStateOf(false) }
+    var isFavorite by remember { mutableStateOf(false) }
     Card(modifier = modifier) {
         Column {
-            Image(
-                painter = painterResource(affirmation.imageResourceId),
-                contentDescription = stringResource(affirmation.stringResourceId),
+            androidx.compose.foundation.layout.Box(
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                // Ảnh affirmation
+                Image(
+                    painter = painterResource(affirmation.imageResourceId),
+                    contentDescription = stringResource(affirmation.stringResourceId),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(194.dp),
+                    contentScale = ContentScale.Crop
+                )
+
+                Button(
+                    onClick = { isFavorite = !isFavorite },
+                    modifier = Modifier
+                        .align(Alignment.TopEnd)
+                        .padding(8.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = if (isFavorite) Color.Red else Color.White.copy(alpha = 0.7f)
+                    ),
+                    shape = RoundedCornerShape(50)  // Làm tròn để tạo hình tròn
+                ) {
+                    Text(
+                        text = "❤",
+                        color = if (isFavorite) Color.White else Color.Red
+                    )
+                }
+            }
+
+            Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(194.dp),
-                contentScale = ContentScale.Crop
-            )
-            Text(
-                text = LocalContext.current.getString(affirmation.stringResourceId),
-                modifier = Modifier.padding(16.dp),
-                style = MaterialTheme.typography.headlineSmall
-            )
+                    .padding(16.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = if (clicked) "Clicked!" else stringResource(affirmation.stringResourceId),
+                    modifier = Modifier.weight(0.8f),
+                    style = MaterialTheme.typography.headlineSmall,
+
+                )
+                Button(
+                    onClick = { clicked = !clicked },
+                    modifier = Modifier.weight(0.2f),
+                    shape = RoundedCornerShape(12.dp) // Bo tròn góc
+
+                ) {
+                    Text("Hi")
+                }
+            }
         }
     }
 }
